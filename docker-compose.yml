@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  auto_ria_parser:
+    build:
+      context: ./cars_sc
+    volumes:
+      - ./results:/app/results # Сохраняем результаты в локальную папку
+    command: ['scrapy', 'crawl', 'pas_car', '-o', '/app/results/output.json']
