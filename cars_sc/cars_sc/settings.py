@@ -5,9 +5,6 @@ BOT_NAME = "cars_sc"
 SPIDER_MODULES = ["cars_sc.spiders"]
 NEWSPIDER_MODULE = "cars_sc.spiders"
 
-# User-Agent для имитации реального пользователя
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
-
 # Отключаем соблюдение robots.txt, если необходимо
 ROBOTSTXT_OBEY = False
 
@@ -50,3 +47,28 @@ HTTPCACHE_IGNORE_HTTP_CODES = []
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+# Промежуточное ПО для случайных заголовков
+DOWNLOADER_MIDDLEWARES = {
+    # Отключаем стандартный User-Agent
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    # Включаем наше промежуточное ПО для случайных заголовков
+    'cars_sc.middlewares.RandomHeadersMiddleware': 400,
+    # Оставляем стандартное промежуточное ПО
+    'cars_sc.middlewares.CarsScDownloaderMiddleware': 543,
+}
+
+# Настраиваем список возможных User-Agent и Accept-Language для случайного выбора
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0",
+    # Добавьте больше User-Agent при необходимости
+]
+
+ACCEPT_LANGUAGES = [
+    "en-US,en;q=0.9",
+    "ru-RU,ru;q=0.9",
+    "uk-UA,uk;q=0.9",
+    # Добавьте другие языки при необходимости
+]
