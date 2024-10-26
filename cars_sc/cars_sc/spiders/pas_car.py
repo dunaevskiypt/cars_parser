@@ -31,11 +31,11 @@ class PasCarSpider(scrapy.Spider):
             yield response.follow(link, callback=self.parse_car)
         # ======================================================================
         # Проверка наличия кнопки "Вперед"
-        # next_page = response.xpath(
-        #     "//span[contains(@class, 'next')]/a[not(contains(@class, 'disabled'))]/@href").get()
-        # if next_page:
-        #     self.logger.info(f'Navigating to the next page: {next_page}')
-        #     yield response.follow(next_page, callback=self.parse)
+        next_page = response.xpath(
+            "//span[contains(@class, 'next')]/a[not(contains(@class, 'disabled'))]/@href").get()
+        if next_page:
+            self.logger.info(f'Navigating to the next page: {next_page}')
+            yield response.follow(next_page, callback=self.parse)
         # ======================================================================
 
     def parse_car(self, response):
