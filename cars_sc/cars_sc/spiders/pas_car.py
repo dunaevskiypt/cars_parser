@@ -92,7 +92,29 @@ class PasCarSpider(scrapy.Spider):
             drive_type = self.extract_type(response, self.drive_types)
             eco_standard = self.extract_type(response, self.eco_standards)
 
-            self.logger.info(f'Extracted data for {brand} {model}: Price: {price}, Region: {region}, City: {city}, Year: {year}, Color: {color}, Body Type: {body_type}, Fuel Type: {fuel_type}, Transmission Type: {transmission_type}, Drive Type: {drive_type}, Eco Standard: {eco_standard}, Owners Count: {owners_count}, VIN: {vin}, Car Number: {car_number}, Accident: {accident}, Mileage: {mileage}')
+            # Извлечение мощности (к.с.)
+            power_hp_raw = response.xpath(
+                "//*[contains(text(), 'к.с.')]/text()").get()
+            power_hp = None
+            if power_hp_raw:
+                match_hp = re.search(r"(\d+)\s*к\.с\.", power_hp_raw)
+                if match_hp:
+                    power_hp = int(match_hp.group(1))
+
+            # Извлечение мощности (кВт)
+            power_kw_raw = response.xpath(
+                "//*[contains(text(), 'кВт')]/text()").get()
+            power_kw = None
+            if power_kw_raw:
+                match_kw = re.search(r"(\d+)\s*кВт", power_kw_raw)
+                if match_kw:
+                    power_kw = int(match_kw.group(1))
+
+            # Извлечение ссылки на фото
+            photo_url = response.xpath(
+                "//img[@class='outline m-auto']/@src").get()
+
+            self.logger.info(f'Extracted data for {brand} {model}: Price: {price}, Region: {region}, City: {city}, Year: {year}, Color: {color}, Body Type: {body_type}, Fuel Type: {fuel_type}, Transmission Type: {transmission_type}, Drive Type: {drive_type}, Eco Standard: {eco_standard}, Owners Count: {owners_count}, VIN: {vin}, Car Number: {car_number}, Accident: {accident}, Mileage: {mileage}, Power (HP): {power_hp}, Power (kW): {power_kw}, Photo URL: {photo_url}')
 
             yield {
                 'price': price,
@@ -113,6 +135,9 @@ class PasCarSpider(scrapy.Spider):
                 'car_number': car_number,
                 'accident': accident,
                 'mileage': mileage,
+                'power_hp': power_hp,  # Добавляем мощность в к.с.
+                'power_kw': power_kw,   # Добавляем мощность в кВт
+                'photo_url': photo_url,  # Добавляем ссылку на фото
             }
         except Exception as e:
             self.logger.error(f'Error parsing car data: {e}')
